@@ -3,6 +3,7 @@ package com.example.androidchat.login;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -57,5 +58,15 @@ public class LoginActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    //Méthode sign Up
+    public void tvSignUpClick(View view){
+        startActivity(new Intent(this, SignUpActivity.class));
+    }
+
+    // Méthode pour le bouton reset password
+    public void tvResetPassword(View view){
+        startActivity(new Intent(this, ResetPasswordActivity.class));
     }
 }

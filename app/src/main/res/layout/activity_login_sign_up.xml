@@ -114,6 +114,7 @@
                 android:id="@+id/btn_signUp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:onClick="btnSignUpClick"
                 android:text="@string/signUp" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>

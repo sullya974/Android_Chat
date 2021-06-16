@@ -9,4 +9,10 @@
     <string name="signUp">Sign Up</string>
     <string name="don_t_have_an_account">Don\'t have an account ?</string>
     <string name="email_required">Enter email</string>
+    <string name="name_required">Name required</string>
+    <string name="confirm_password_required">Please confirm your password</string>
+    <string name="email_format_invalid">Email format is invalid</string>
+    <string name="password_confirm_password_not_equals">Password and confirm password are not equals</string>
+    <string name="user_created_successfully">User created successfully</string>
+    <string name="signup_failed">Sign up failed</string>
 </resources>
