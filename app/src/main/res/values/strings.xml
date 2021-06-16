@@ -4,4 +4,9 @@
     <string name="enter_password">Enter password</string>
     <string name="reset_password">Reset password</string>
     <string name="login">Login</string>
+    <string name="enter_name">Enter name</string>
+    <string name="enter_confirm_password">Confirm password</string>
+    <string name="signUp">Sign Up</string>
+    <string name="don_t_have_an_account">Don\'t have an account ?</string>
+    <string name="email_required">Enter email</string>
 </resources>
