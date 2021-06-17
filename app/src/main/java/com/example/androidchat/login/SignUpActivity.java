@@ -33,6 +33,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -49,6 +50,8 @@ public class SignUpActivity extends AppCompatActivity {
     private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
     private CollectionReference usersCollectionReference = rootRef.collection("Users");
     private FirebaseUser firebaseUser;
+
+    FirebaseStorage firebaseStorage;
     private StorageReference storageReference;
     //Firebase Realtime database
     private DatabaseReference databaseReference;
@@ -70,7 +73,7 @@ public class SignUpActivity extends AppCompatActivity {
         password = etPassword.getText().toString().trim();
         confirmPassword = etConfirmPassword.getText().toString().trim();
 
-        User user = new User(name, email, password);
+//        User user = new User(name, email, password);
 
         if (name.equals("")) {
             etName.setError(getString(R.string.name_required));
@@ -106,7 +109,7 @@ public class SignUpActivity extends AppCompatActivity {
                         } else {
                             updateNameOnly();
                         }
-                        startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
+//                        startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
 
 //                        Toast.makeText(SignUpActivity.this, R.string.user_created_successfully, Toast.LENGTH_SHORT).show();
 //                        startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
@@ -194,12 +197,81 @@ public class SignUpActivity extends AppCompatActivity {
         String strFileName = firebaseUser.getUid() + ".jpg";
 
         // Créer une référence du storage avec le dossier le fichier
-        StorageReference fileRef = storageReference. child("avatars_user/" + strFileName);
+        firebaseStorage = FirebaseStorage.getInstance();
+        storageReference = firebaseStorage.getReference();
+        StorageReference fileRef = storageReference.child("avatars_user/" + strFileName);
+        UploadTask uploadTask = fileRef.putFile(localFileUri);
+
+        //Enregistre un observer pour écouter lorsque le téléchargement est fait ou s'il échoue
+        uploadTask.addOnSuccessListener(taskSnapshot -> {
+            Toast.makeText(this, "Upload succeed !! - Message:" + taskSnapshot.getMetadata(), Toast.LENGTH_SHORT).show();
+
+            Task<Uri> downloadTaskUri = fileRef.getDownloadUrl();
+            downloadTaskUri.addOnSuccessListener(uri -> {
+                serverFileUri = uri;
+                Toast.makeText(this, "Download succeed !! - Message:" + uri, Toast.LENGTH_SHORT).show();
+
+                UserProfileChangeRequest request = new UserProfileChangeRequest.Builder()
+                        .setDisplayName(etName.getText().toString().trim())
+                        .build();
+
+//                Task<Void> updateProfileTask = firebaseUser.updateProfile(request);
+//                updateProfileTask.addOnSuccessListener(unused -> {
+//                    Toast.makeText(this, "Update profile succeed !! - Message:" + updateProfileTask.getResult(), Toast.LENGTH_SHORT).show();
+//                    Log.d(TAG, "Update profile succeed !! - Message:" + updateProfileTask.getResult());
+
+                String userId = firebaseUser.getUid();
+                User user = new User();
+                user.name = etName.getText().toString();
+                user.email = etEmail.getText().toString();
+                user.avatar = serverFileUri.getPath();
+//                user.online = true;
+//                user.id = userId;
+
+//                                                    /** Connexion à Realtime **/
+                databaseReference = FirebaseDatabase // Création / récupération d'un nouveau noeud "Users"
+                        .getInstance() // Instance de connexion
+                        .getReference() // Cherche la référence désirée à partir de la racine de la Db
+                        .child(NodesNames.USERS);
+//
+//                // Création HasMap pour la gestion des données
+//                HashMap<String, String> hashMap = new HashMap<>();
+//                hashMap.put(NodesNames.NAME, etName.getText().toString());
+//                hashMap.put(NodesNames.EMAIL, etEmail.getText().toString());
+//                hashMap.put(NodesNames.ONLINE, "true");
+//                hashMap.put(NodesNames.AVATAR, serverFileUri.getPath());
+
+                // Envoi des datas vers Realtime
+//                    Task<Void> createUserTask = databaseReference.child(userId) // Créer un noeud avec la valuer "userId" du user courant
+//                            .setValue(hashMap);
+                Task<Void> createUserTask = databaseReference.child(userId) // Créer un noeud avec la valuer "userId" du user courant
+                        .setValue(user);
+
+                createUserTask.addOnSuccessListener(unused1 -> {
+                    Toast.makeText(this, "User creation succeed !! - Message:" + createUserTask.getResult(), Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "User creation succeed !!");
+                })
+                        .addOnFailureListener((Exception ex) -> {
+                            Toast.makeText(this, "User creation failed !! - Message:" + ex.getMessage(), Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, "User creation failed !! - Message:" + ex.getMessage());
+                        });
+//                })
+//                        .addOnFailureListener((Exception ex) -> {
+//                            Toast.makeText(this, "Update profile failed !! - Message:" + ex.getMessage(), Toast.LENGTH_SHORT).show();
+//                        });
+            })
+                    .addOnFailureListener((Exception ex) -> {
+                        Toast.makeText(this, "Download failed !! - Message:" + ex.toString(), Toast.LENGTH_SHORT).show();
+                    });
+        }).addOnFailureListener((Exception ex) -> {
+            Toast.makeText(this, "Upload failed !! - Message:" + ex.toString(), Toast.LENGTH_SHORT).show();
+        });
 
         //Upload vers le storage
-        fileRef.putFile(localFileUri)
-                .addOnCompleteListener(SignUpActivity.this, task -> {
-
+//        //Upload vers le storage
+//        fileRef.putFile(localFileUri)
+//                .addOnCompleteListener(SignUpActivity.this, task -> {
+//
 //                    if (task.isSuccessful()) {
 //                        //Récupère l'URL de l'avatar dans le storage
 //                        fileRef.getDownloadUrl()
@@ -260,10 +332,10 @@ public class SignUpActivity extends AppCompatActivity {
 //                    } else {
 //                        Log.d(TAG, "updateNameAndPhoto - onComplete: ERROR: " + task.getException());
 //                    }
-
-                }).addOnFailureListener((Exception ex) -> {
-            Log.d(TAG, "updateNameAndPhoto: ERROR: " + ex.toString());
-        });
+//
+//                }).addOnFailureListener((Exception ex) -> {
+//            Log.d(TAG, "updateNameAndPhoto: ERROR: " + ex.toString());
+//        });
     }
 
 
