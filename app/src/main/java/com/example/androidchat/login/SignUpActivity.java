@@ -225,8 +225,8 @@ public class SignUpActivity extends AppCompatActivity {
                 user.name = etName.getText().toString();
                 user.email = etEmail.getText().toString();
                 user.avatar = serverFileUri.getPath();
-//                user.online = true;
-//                user.id = userId;
+                user.online = true;
+                user.id = userId;
 
 //                                                    /** Connexion à Realtime **/
                 databaseReference = FirebaseDatabase // Création / récupération d'un nouveau noeud "Users"
