@@ -15,4 +15,7 @@
     <string name="password_confirm_password_not_equals">Password and confirm password are not equals</string>
     <string name="user_created_successfully">User created successfully</string>
     <string name="signup_failed">Sign up failed</string>
+    <string name="user_creation_failed">User creation failed</string>
+    <string name="user_update_failed">User update failed</string>
+    <string name="access_permission_is_required">Access is permission is required</string>
 </resources>
