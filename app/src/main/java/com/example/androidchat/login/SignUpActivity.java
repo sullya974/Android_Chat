@@ -194,72 +194,72 @@ public class SignUpActivity extends AppCompatActivity {
         String strFileName = firebaseUser.getUid() + ".jpg";
 
         // Créer une référence du storage avec le dossier le fichier
-        final StorageReference fileRef = storageReference.child("avatars_user/" + strFileName);
+        StorageReference fileRef = storageReference. child("avatars_user/" + strFileName);
 
         //Upload vers le storage
         fileRef.putFile(localFileUri)
                 .addOnCompleteListener(SignUpActivity.this, task -> {
 
-                    if (task.isSuccessful()) {
-                        //Récupère l'URL de l'avatar dans le storage
-                        fileRef.getDownloadUrl()
-                                .addOnSuccessListener(SignUpActivity.this, new OnSuccessListener<Uri>() {
-                                    @Override
-                                    public void onSuccess(Uri uri) {
-                                        serverFileUri = uri;
-
-                                        UserProfileChangeRequest request = new UserProfileChangeRequest.Builder()
-                                                .setDisplayName(etName.getText().toString().trim())
-                                                .build();
-
-                                        firebaseUser.updateProfile(request).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()) {
-                                                    String userId = firebaseUser.getUid();
-                                                    /** Connexion à Realtime **/
-                                                    databaseReference = FirebaseDatabase // Création / récupération d'un nouveau noeud "Users"
-                                                            .getInstance() // Instance de connexion
-                                                            .getReference() // Cherche la référence désirée à partir de la racine de la Db
-                                                            .child(NodesNames.USERS);
-
-                                                    // Création HasMap pour la gestion des données
-                                                    HashMap<String, String> hashMap = new HashMap<>();
-                                                    hashMap.put(NodesNames.NAME, etName.getText().toString());
-                                                    hashMap.put(NodesNames.EMAIL, etEmail.getText().toString());
-                                                    hashMap.put(NodesNames.ONLINE, "true");
-                                                    hashMap.put(NodesNames.AVATAR, serverFileUri.getPath());
-
-                                                    // Envoi des datas vers Realtime
-                                                    databaseReference.child(userId) // Créer un noeud avec la valuer "userId" du user courant
-                                                            .setValue(hashMap) // Set les valeurs du user dans Realtime
-                                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                                @Override
-                                                                public void onComplete(@NonNull Task<Void> task) {
-                                                                    if (task.isSuccessful()) {
-                                                                        Toast.makeText(SignUpActivity.this, R.string.user_created_successfully, Toast.LENGTH_SHORT).show();
-
-                                                                        //Lancement de l'activité suivante
-                                                                        startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
-                                                                    } else {
-                                                                        Toast.makeText(SignUpActivity.this, getString(R.string.user_creation_failed) + task.getException(), Toast.LENGTH_SHORT).show();
-                                                                        Log.d(TAG, "onComplete: Error user creation - Message" + task.getException());
-                                                                    }
-                                                                }
-                                                            });
-                                                } else {
-                                                    // S'il y a un problème
-                                                    Toast.makeText(SignUpActivity.this, R.string.user_update_failed, Toast.LENGTH_SHORT).show();
-                                                    Log.d(TAG, "onComplete: Error user updating - Message" + task.getException());
-                                                }
-                                            }
-                                        });
-
-                                    }
-                                });
-                    } else {
-                        Log.d(TAG, "updateNameAndPhoto - onComplete: ERROR: " + task.getException());
-                    }
+//                    if (task.isSuccessful()) {
+//                        //Récupère l'URL de l'avatar dans le storage
+//                        fileRef.getDownloadUrl()
+//                                .addOnSuccessListener(SignUpActivity.this, new OnSuccessListener<Uri>() {
+//                                    @Override
+//                                    public void onSuccess(Uri uri) {
+//                                        serverFileUri = uri;
+//
+//                                        UserProfileChangeRequest request = new UserProfileChangeRequest.Builder()
+//                                                .setDisplayName(etName.getText().toString().trim())
+//                                                .build();
+//
+//                                        firebaseUser.updateProfile(request).addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                            @Override
+//                                            public void onComplete(@NonNull Task<Void> task) {
+//                                                if (task.isSuccessful()) {
+//                                                    String userId = firebaseUser.getUid();
+//                                                    /** Connexion à Realtime **/
+//                                                    databaseReference = FirebaseDatabase // Création / récupération d'un nouveau noeud "Users"
+//                                                            .getInstance() // Instance de connexion
+//                                                            .getReference() // Cherche la référence désirée à partir de la racine de la Db
+//                                                            .child(NodesNames.USERS);
+//
+//                                                    // Création HasMap pour la gestion des données
+//                                                    HashMap<String, String> hashMap = new HashMap<>();
+//                                                    hashMap.put(NodesNames.NAME, etName.getText().toString());
+//                                                    hashMap.put(NodesNames.EMAIL, etEmail.getText().toString());
+//                                                    hashMap.put(NodesNames.ONLINE, "true");
+//                                                    hashMap.put(NodesNames.AVATAR, serverFileUri.getPath());
+//
+//                                                    // Envoi des datas vers Realtime
+//                                                    databaseReference.child(userId) // Créer un noeud avec la valuer "userId" du user courant
+//                                                            .setValue(hashMap) // Set les valeurs du user dans Realtime
+//                                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                                                @Override
+//                                                                public void onComplete(@NonNull Task<Void> task) {
+//                                                                    if (task.isSuccessful()) {
+//                                                                        Toast.makeText(SignUpActivity.this, R.string.user_created_successfully, Toast.LENGTH_SHORT).show();
+//
+//                                                                        //Lancement de l'activité suivante
+//                                                                        startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
+//                                                                    } else {
+//                                                                        Toast.makeText(SignUpActivity.this, getString(R.string.user_creation_failed) + task.getException(), Toast.LENGTH_SHORT).show();
+//                                                                        Log.d(TAG, "onComplete: Error user creation - Message" + task.getException());
+//                                                                    }
+//                                                                }
+//                                                            });
+//                                                } else {
+//                                                    // S'il y a un problème
+//                                                    Toast.makeText(SignUpActivity.this, R.string.user_update_failed, Toast.LENGTH_SHORT).show();
+//                                                    Log.d(TAG, "onComplete: Error user updating - Message" + task.getException());
+//                                                }
+//                                            }
+//                                        });
+//
+//                                    }
+//                                });
+//                    } else {
+//                        Log.d(TAG, "updateNameAndPhoto - onComplete: ERROR: " + task.getException());
+//                    }
 
                 }).addOnFailureListener((Exception ex) -> {
             Log.d(TAG, "updateNameAndPhoto: ERROR: " + ex.toString());
